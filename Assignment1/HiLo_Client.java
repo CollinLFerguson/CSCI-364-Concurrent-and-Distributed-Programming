@@ -17,7 +17,6 @@ public class HiLo_Client{
         String hostName = " ";
         int portNumber = -1;
         Socket serverSocket = null;
-        System.out.println("Ant Test");
 
         if(args.length != 2) {
             System.out.println("Usage: java HiLoClient <hostname> <port number>");
@@ -30,10 +29,12 @@ public class HiLo_Client{
         try {
             serverSocket = new Socket(hostName, portNumber);
         } catch (UnknownHostException e) {
-            e.printStackTrace(); // Change Later
+            //e.printStackTrace(); // Change Later
+            System.out.println("There were issues connecting to the server.");
             System.exit(0);
         } catch (IOException e) {
-            e.printStackTrace(); //Change Later
+            //e.printStackTrace(); //Change Later
+            System.out.println("There were issues connecting to the server.");
             System.exit(0);
         }
 
@@ -44,11 +45,12 @@ public class HiLo_Client{
             out = new PrintWriter(serverSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
         } catch (IOException e) {
+            System.out.println("There was an issue connecting the input/output of the server.");
             e.printStackTrace();
             System.exit(0);
         }
 
-        System.out.println(in.readLine());
+        System.out.println("Server: " + in.readLine());
 
         Scanner userInput = new Scanner(System.in);
         String nextGuess = " ";
@@ -59,12 +61,13 @@ public class HiLo_Client{
             nextGuess = userInput.next();
 
             out.println(nextGuess);
+            String serverMessage = in.readLine();
 
-            System.out.println("Server: " + in.readLine());
+            System.out.println("Server: " + serverMessage);
 
-            Thread.sleep(100);
+            //Thread.sleep(100);
 
-            if(in.ready()) {
+            if(serverMessage.contains("Correct")) {
                 System.out.println("Server: " + in.readLine());
                 nextGuess = userInput.next();
                 out.println(nextGuess);
