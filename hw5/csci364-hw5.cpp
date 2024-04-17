@@ -55,7 +55,7 @@ double multiplyMatrix(int** matrix1, int** matrix2, int** productMatrix, int mat
 	#pragma omp parallel
 	{
 
-		#pragma omp for
+		//#pragma omp for
 		for(int i = 0; i < matrixSize; i++)
 		{
 			for(int j = 0; j < matrixSize; j++)
