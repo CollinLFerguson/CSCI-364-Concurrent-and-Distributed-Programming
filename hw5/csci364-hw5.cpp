@@ -10,7 +10,7 @@ const int seed=1;
 std::mt19937 engine(seed);
 std::uniform_int_distribution<int> dist(0,100);
 
-void allocateMatrix(int**& matrix, int matrixSize, int testValue){
+void allocateMatrix(int**& matrix, int matrixSize, int initZero){
 ///testValue should be either a 0 or 1.
 	matrix = new int*[matrixSize];
 	for(int x = 0; x<matrixSize; x++){
@@ -51,10 +51,10 @@ void multiplyMatrix(int** matrix1, int** matrix2, int** productMatrix, int matri
 {
 	for(int i = 0; i < matrixSize; i++){
 		for(int j = 0; j < matrixSize; j++){
-			productMatrix[i][j];
+			productMatrix[i][j] = 0;
 
 			for(int x = 0; x < matrixSize; x++){
-				productMatrix[i][j] = matrix1[i][x] * matrix2[x][j]; //hope this works.
+				productMatrix[i][j] += matrix1[i][x] * matrix2[x][j]; //hope this works.
 			}
 		}
 	}
@@ -78,6 +78,14 @@ int main(int argc, char *argv[]) {
 	int **productMatrix;
 
 	allocateMatrix(matrix1, matrixSize, 1);
+
+#ifdef TEST
+	allocateMatrix(matrix2, matrixSize, 0);
+#else
+	allocateMatrix(matrix2, matrixSize, 1);
+#endif
+
+
 	allocateMatrix(matrix2, matrixSize, 0);
 	allocateMatrix(productMatrix, matrixSize, 0);
 
