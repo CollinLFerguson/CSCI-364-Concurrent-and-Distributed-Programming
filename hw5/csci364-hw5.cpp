@@ -2,19 +2,21 @@
 #include <string>
 #include <random>
 
+#include <stdio.h> //used to get int command line argument.
+
 #define __MATRIXSIZE 2
 
 const int seed=1;
 std::mt19937 engine(seed);
 std::uniform_int_distribution<int> dist(0,100);
 
-void allocateMatrix(int**& matrix, int testValue){
+void allocateMatrix(int**& matrix, int matrixSize, int testValue){
 ///testValue should be either a 0 or 1.
-	matrix = new int*[__MATRIXSIZE];
-	for(int x = 0; x<__MATRIXSIZE; x++){
-		matrix[x] = new int[__MATRIXSIZE];
-		for(int i = 0; i<__MATRIXSIZE; i++){
-#ifdef DTEST
+	matrix = new int*[matrixSize];
+	for(int x = 0; x<matrixSize; x++){
+		matrix[x] = new int[matrixSize];
+		for(int i = 0; i<matrixSize; i++){
+#ifdef TEST
 			matrix[x][i] = testValue;
 #else
 			matrix[x][i] = dist(engine);
@@ -23,46 +25,74 @@ void allocateMatrix(int**& matrix, int testValue){
 	}
 }
 
-void allocateMatrix(int**& matrix){
-	allocateMatrix(matrix,1);
+void allocateMatrix(int**& matrix, int matrixSize){
+	allocateMatrix(matrix, matrixSize, 1);
 }
 
-void deallocateMatrix(int**& matrix){
-	for(int x = __MATRIXSIZE; x>=0; x--){
+void deallocateMatrix(int**& matrix, int matrixSize){
+	for(int x = matrixSize; x>=0; x--){
 		delete[] matrix[x];
 	}
 	delete[] matrix;
 	matrix = NULL;
 }
 
-void printMatrix(int** matrix){
-	for(int x = 0; x<__MATRIXSIZE; x++){
-		for(int i = 0; i<__MATRIXSIZE; i++){
-			std::cout<<matrix[x][i] << " ";
+void printMatrix(int** matrix, int matrixSize){
+	for(int x = 0; x<matrixSize; x++){
+		for(int i = 0; i<matrixSize; i++){
+			printf ("%3d ", matrix[x][i]);
 		}
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;
 }
 
-int main(int argc, char *argv[]) {
-	bool printResults = false;
+void multiplyMatrix(int** matrix1, int** matrix2, int** productMatrix, int matrixSize)
+{
+	for(int i = 0; i < matrixSize; i++){
+		for(int j = 0; j < matrixSize; j++){
+			productMatrix[i][j];
 
-	if(argc > 1 && (*argv[0] == 'Y'|| *argv[0] == 'y' || *argv[0] == '1')){
+			for(int x = 0; x < matrixSize; x++){
+				productMatrix[i][j] = matrix1[i][x] * matrix2[x][j]; //hope this works.
+			}
+		}
+	}
+}
+
+int main(int argc, char *argv[]) {
+	if(argc == 1){
+		std::cout << "Usage: ./csci364-hw5 <matrix size> [<print flag>]";
+		return 0;
+	}
+
+	bool printResults = false;
+	int matrixSize = atoi(argv[1]);
+
+	if(argc > 2 && (*argv[2] == 'Y'|| *argv[2] == 'y' || *argv[2] == '1')){
 		printResults = true;
 	}
 
 	int **matrix1;
 	int **matrix2;
-	allocateMatrix(matrix1,1);
-	allocateMatrix(matrix2,1);
+	int **productMatrix;
+
+	allocateMatrix(matrix1, matrixSize, 1);
+	allocateMatrix(matrix2, matrixSize, 0);
+	allocateMatrix(productMatrix, matrixSize, 0);
 
 	if(printResults){
-		printMatrix(matrix1);
-		printMatrix(matrix2);
+		printMatrix(matrix1, matrixSize);
+		printMatrix(matrix2, matrixSize);
 	}
 
-	std::cout << "Bello Borld" << std::endl;
-	std::cout << __MATRIXSIZE << std::endl;
+	multiplyMatrix(matrix1, matrix2, productMatrix, matrixSize);
+
+	printMatrix(productMatrix, matrixSize);
+
+	deallocateMatrix(matrix1, matrixSize);
+	deallocateMatrix(matrix2, matrixSize);
+	deallocateMatrix(productMatrix, matrixSize);
+
 	return 0;
 }
