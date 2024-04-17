@@ -51,20 +51,24 @@ void printMatrix(int** matrix, int matrixSize){
 void multiplyMatrix(int** matrix1, int** matrix2, int** productMatrix, int matrixSize)
 {
 	double start = omp_get_wtime();
-	//#pragma omp parallel{
-		//#pragma omp for{
-
-			for(int i = 0; i < matrixSize; i++){
-				for(int j = 0; j < matrixSize; j++){
+	#pragma omp parallel
+	{
+		#pragma omp for
+		{
+			for(int i = 0; i < matrixSize; i++)
+			{
+				for(int j = 0; j < matrixSize; j++)
+				{
 					productMatrix[i][j] = 0;
 
-					for(int x = 0; x < matrixSize; x++){
+					for(int x = 0; x < matrixSize; x++)
+					{
 						productMatrix[i][j] += matrix1[i][x] * matrix2[x][j]; //hope this works.
 					}
 				}
 			}
-		//}
-	//}
+		}
+	}
 	double end = omp_get_wtime();
 	std::cout << end - start << std::endl;
 }
