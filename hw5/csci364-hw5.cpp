@@ -18,7 +18,7 @@ void allocateMatrix(int**& matrix, int matrixSize, int initZero){
 		matrix[x] = new int[matrixSize];
 		for(int i = 0; i<matrixSize; i++){
 #ifdef TEST
-			matrix[x][i] = testValue;
+			matrix[x][i] = initZero;
 #else
 			matrix[x][i] = dist(engine);
 #endif
@@ -31,7 +31,7 @@ void allocateMatrix(int**& matrix, int matrixSize){
 }
 
 void deallocateMatrix(int**& matrix, int matrixSize){
-	for(int x = matrixSize; x>=0; x--){
+	for(int x = 0; x< matrixSize; x++){
 		delete[] matrix[x];
 	}
 	delete[] matrix;
@@ -48,29 +48,30 @@ void printMatrix(int** matrix, int matrixSize){
 	std::cout << std::endl;
 }
 
-void multiplyMatrix(int** matrix1, int** matrix2, int** productMatrix, int matrixSize)
+double multiplyMatrix(int** matrix1, int** matrix2, int** productMatrix, int matrixSize)
 {
 	double start = omp_get_wtime();
+
 	#pragma omp parallel
 	{
-		#pragma omp for
-		{
-			for(int i = 0; i < matrixSize; i++)
-			{
-				for(int j = 0; j < matrixSize; j++)
-				{
-					productMatrix[i][j] = 0;
 
-					for(int x = 0; x < matrixSize; x++)
-					{
-						productMatrix[i][j] += matrix1[i][x] * matrix2[x][j]; //hope this works.
-					}
+		#pragma omp for
+		for(int i = 0; i < matrixSize; i++)
+		{
+			for(int j = 0; j < matrixSize; j++)
+			{
+				productMatrix[i][j] = 0;
+
+				for(int x = 0; x < matrixSize; x++)
+				{
+					productMatrix[i][j] += matrix1[i][x] * matrix2[x][j]; //hope this works.
 				}
 			}
 		}
 	}
+
 	double end = omp_get_wtime();
-	std::cout << end - start << std::endl;
+	return end - start;
 }
 
 int main(int argc, char *argv[]) {
@@ -107,9 +108,13 @@ int main(int argc, char *argv[]) {
 		printMatrix(matrix2, matrixSize);
 	}
 
-	multiplyMatrix(matrix1, matrix2, productMatrix, matrixSize);
+	double time = multiplyMatrix(matrix1, matrix2, productMatrix, matrixSize);
 
-	printMatrix(productMatrix, matrixSize);
+	if(printResults){
+		printMatrix(productMatrix, matrixSize);
+	}
+
+	std::cout << time << std::endl;
 
 	deallocateMatrix(matrix1, matrixSize);
 	deallocateMatrix(matrix2, matrixSize);
